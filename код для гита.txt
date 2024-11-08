@@ -1,0 +1,48 @@
+Module DistanceCalculator
+
+    ' Координаты (широта, долгота) для некоторых городов России
+    Dim cities As New Dictionary(Of String, (Double, Double)) From {
+        {"Москва", (55.7558, 37.6173)},
+        {"Санкт-Петербург", (59.9343, 30.3351)},
+        {"Екатеринбург", (56.8389, 60.6057)},
+        {"Новосибирск", (55.0084, 82.0155)},
+        {"Казань", (55.8304, 49.0661)}
+    }
+
+    Sub Main()
+        Console.WriteLine("Введите первый город:")
+        Dim city1 As String = Console.ReadLine()
+
+        Console.WriteLine("Введите второй город:")
+        Dim city2 As String = Console.ReadLine()
+
+        If Not cities.ContainsKey(city1) OrElse Not cities.ContainsKey(city2) Then
+            Console.WriteLine("Один или оба введенных города не найдены.")
+        Else
+            Dim distance As Double = CalculateDistance(cities(city1), cities(city2))
+            Console.WriteLine($"Расстояние между {city1} и {city2} составляет {distance:F2} км.")
+        End If
+
+        Console.ReadLine()
+    End Sub
+
+    Function CalculateDistance(city1 As (Double, Double), city2 As (Double, Double)) As Double
+        Dim R As Double = 6371 ' Радиус Земли в километрах
+
+        Dim lat1 As Double = city1.Item1 * Math.PI / 180
+        Dim lon1 As Double = city1.Item2 * Math.PI / 180
+        Dim lat2 As Double = city2.Item1 * Math.PI / 180
+        Dim lon2 As Double = city2.Item2 * Math.PI / 180
+
+        Dim dLat As Double = lat2 - lat1
+        Dim dLon As Double = lon2 - lon1
+
+        Dim a As Double = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                          Math.Cos(lat1) * Math.Cos(lat2) *
+                          Math.Sin(dLon / 2) * Math.Sin(dLon / 2)
+
+        Dim c As Double = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a))
+
+        Return R * c ' Расстояние в километрах
+    End Function
+End Module
